@@ -50,7 +50,9 @@ export const EntryPanel = forwardRef<HTMLElement, PanelProps>(function EntryPane
   const tapTimer = useRef<number | null>(null);
   // Held in a ref so the play/pause effect does not re-run on every render.
   const onViewRef = useRef(onView);
-  onViewRef.current = onView;
+  useEffect(() => {
+    onViewRef.current = onView;
+  }, [onView]);
   const viewTimer = useRef<number | null>(null);
   const viewLogged = useRef(false);
   const [mark, setMark] = useState<{ x: number; y: number; key: number } | null>(null);

@@ -13,8 +13,9 @@ const INK = "#12100E";
 const RULE = "#C4BFB4";
 
 /** Shares carry the rank. That is the whole point of the image. */
-export default async function Image({ params }: { params: { slug: string } }) {
-  const entry = await getEntryBySlug(params.slug);
+export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const entry = await getEntryBySlug(slug);
   const season = await getActiveSeason();
   const siblings = season ? await getApprovedEntries(season.id, "top") : [];
   const rank = entry ? rankOf(siblings, entry.id) || 1 : 0;

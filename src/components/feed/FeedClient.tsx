@@ -106,12 +106,11 @@ export function FeedClient({
   useEffect(() => {
     if (didInitialScroll.current || !initialSlug) return;
     const index = ordered.findIndex((entry) => entry.slug === initialSlug);
-    if (index > 0) {
+    if (index >= 0) {
       didInitialScroll.current = true;
-      panelRefs.current[index]?.scrollIntoView({ block: "start" });
-      setActiveIndex(index);
-    } else if (index === 0) {
-      didInitialScroll.current = true;
+      // The IntersectionObserver picks up the new active entry once the scroll
+      // lands, so there is no state to set here.
+      if (index > 0) panelRefs.current[index]?.scrollIntoView({ block: "start" });
     }
   }, [initialSlug, ordered]);
 

@@ -4,8 +4,8 @@ Twenty-five companies pay $1,000 each for a slot. All twenty-five attempt the sa
 while promoting their product. One vertical video each. Visitors vote. The leaderboard is
 the record.
 
-Next.js 14 (App Router) · TypeScript · Tailwind · Supabase (Postgres, Storage, Realtime) ·
-Stripe Connect.
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind · Supabase (Postgres, Storage,
+Realtime) · Stripe Connect.
 
 ## Setup
 

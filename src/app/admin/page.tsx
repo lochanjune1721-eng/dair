@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Admin", robots: { index: false, foll
 
 export default async function AdminPage() {
   // Checked server-side. The password never reaches the client.
-  if (!isAdmin()) {
+  if (!(await isAdmin())) {
     return (
       <main className="min-h-screen px-4">
         <AdminLogin />

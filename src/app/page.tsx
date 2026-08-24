@@ -3,7 +3,12 @@ import { getActiveSeason, getApprovedEntries } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
-export default async function FeedPage({ searchParams }: { searchParams: { e?: string } }) {
+export default async function FeedPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ e?: string }>;
+}) {
+  const { e } = await searchParams;
   const season = await getActiveSeason();
 
   if (!season) {
@@ -24,7 +29,7 @@ export default async function FeedPage({ searchParams }: { searchParams: { e?: s
       initialEntries={entries}
       seasonName={season.name}
       dareText={season.dare_text}
-      initialSlug={searchParams.e}
+      initialSlug={e}
     />
   );
 }

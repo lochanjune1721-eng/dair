@@ -15,9 +15,10 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const entry = await getEntryBySlug(params.slug);
+  const { slug } = await params;
+  const entry = await getEntryBySlug(slug);
   if (!entry) return { title: "Entry not found" };
 
   return {
@@ -36,8 +37,9 @@ export async function generateMetadata({
   };
 }
 
-export default async function EntryPage({ params }: { params: { slug: string } }) {
-  const entry = await getEntryBySlug(params.slug);
+export default async function EntryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const entry = await getEntryBySlug(slug);
   if (!entry) notFound();
 
   const season = await getActiveSeason();

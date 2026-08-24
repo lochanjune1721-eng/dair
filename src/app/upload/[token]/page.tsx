@@ -25,9 +25,10 @@ function Refused({ heading, detail }: { heading: string; detail: string }) {
   );
 }
 
-export default async function UploadPage({ params }: { params: { token: string } }) {
+export default async function UploadPage({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params;
   const season = await getActiveSeason();
-  const verified = verifyUploadToken(params.token);
+  const verified = verifyUploadToken(token);
 
   const chrome = (children: React.ReactNode) => (
     <div className="flex min-h-screen flex-col">
@@ -72,7 +73,7 @@ export default async function UploadPage({ params }: { params: { token: string }
   return chrome(
     <main className="mx-auto w-full max-w-[860px] flex-1 px-4 py-10 sm:px-6">
       <UploadClient
-        token={params.token}
+        token={token}
         companyName={entry.company_name}
         slotNumber={entry.slot_number}
         existingVideo={entry.video_path}

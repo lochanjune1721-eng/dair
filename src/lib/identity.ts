@@ -1,7 +1,6 @@
 import "server-only";
 
 import crypto from "node:crypto";
-import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 
 import { env } from "@/lib/env";
@@ -10,10 +9,8 @@ export const FINGERPRINT_COOKIE = "dair_fp";
 export const FINGERPRINT_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
 
 /** Reads the first-party fingerprint cookie. Set by middleware on first hit. */
-export function readFingerprint(req?: NextRequest): string | null {
-  const value = req
-    ? req.cookies.get(FINGERPRINT_COOKIE)?.value
-    : cookies().get(FINGERPRINT_COOKIE)?.value;
+export function readFingerprint(req: NextRequest): string | null {
+  const value = req.cookies.get(FINGERPRINT_COOKIE)?.value;
   if (!value) return null;
   return /^[0-9a-f-]{36}$/i.test(value) ? value : null;
 }

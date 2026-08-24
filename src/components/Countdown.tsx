@@ -1,18 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import { countdownParts, pad } from "@/lib/format";
 
+/**
+ * Time is an external mutable source, so it is read through
+ * useSyncExternalStore rather than mirrored into state from an effect. The
+ * server snapshot is null, which renders the placeholder and keeps hydration
+ * from mismatching a clock that has already moved.
+ */
+let listeners: Array<() => void> = [];
+let currentTime = 0;
+let timer: ReturnType<typeof setInterval> | null = null;
+
+function subscribe(listener: () => void) {
+  currentTime = Date.now();
+  listeners.push(listener);
+
+  if (timer === null) {
+    timer = setInterval(() => {
+      currentTime = Date.now();
+      for (const notify of listeners) notify();
+    }, 1000);
+  }
+
+  return () => {
+    listeners = listeners.filter((candidate) => candidate !== listener);
+    if (listeners.length === 0 && timer !== null) {
+      clearInterval(timer);
+      timer = null;
+    }
+  };
+}
+
+const getSnapshot = () => currentTime;
+const getServerSnapshot = () => null;
+
 /** Ticks in mono. No animation beyond the digits changing. */
 export function Countdown({ target }: { target: string | null }) {
-  const [now, setNow] = useState<number | null>(null);
-
-  useEffect(() => {
-    setNow(Date.now());
-    const timer = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(timer);
-  }, []);
+  const now = useSyncExternalStore<number | null>(subscribe, getSnapshot, getServerSnapshot);
 
   if (!target) return <span className="tabular">NO DEADLINE SET</span>;
   if (now === null) return <span className="tabular">--:--:--:--</span>;

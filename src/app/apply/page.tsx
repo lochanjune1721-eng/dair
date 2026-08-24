@@ -16,8 +16,9 @@ export const metadata: Metadata = {
 export default async function ApplyPage({
   searchParams,
 }: {
-  searchParams: { cancelled?: string };
+  searchParams: Promise<{ cancelled?: string }>;
 }) {
+  const { cancelled } = await searchParams;
   const season = await getActiveSeason();
   const taken = season ? await getSlotsTaken(season.id) : 25;
   const remaining = season ? Math.max(0, season.total_slots - taken) : 0;
@@ -38,7 +39,7 @@ export default async function ApplyPage({
               votes cast on this site and nothing else.
             </p>
 
-            {searchParams.cancelled ? (
+            {cancelled ? (
               <p role="status" className="marginalia mt-6 text-live">
                 Checkout was cancelled. Your slot was not taken.
               </p>

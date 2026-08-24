@@ -15,7 +15,9 @@ export const dynamic = "force-dynamic";
 type Action = "approve" | "reject" | "update" | "grant" | "delete" | "upload_link";
 
 export async function POST(request: NextRequest) {
-  if (!isAdmin()) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  if (!(await isAdmin())) {
+    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  }
 
   let body: Record<string, unknown>;
   try {

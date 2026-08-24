@@ -5,7 +5,7 @@ import { useMemo, useRef } from "react";
 
 import { RankNumber } from "@/components/RankNumber";
 import { useLiveEntries } from "@/hooks/useLiveEntries";
-import { number, pad, stamp } from "@/lib/format";
+import { number, stamp } from "@/lib/format";
 import { compareByRank } from "@/lib/rank";
 import { videoUrl } from "@/lib/supabase/public";
 import type { PublicEntry } from "@/lib/types";
