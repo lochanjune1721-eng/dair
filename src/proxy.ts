@@ -7,8 +7,10 @@ const ONE_YEAR = 60 * 60 * 24 * 365;
  * Issues the first-party fingerprint cookie on the first request. Every vote,
  * view and rate-limit decision keys off it, so it must exist before the feed
  * renders rather than being minted lazily by the vote route.
+ *
+ * Named `proxy` in `proxy.ts`: Next 16 deprecated the `middleware` convention.
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const response = NextResponse.next();
   const existing = request.cookies.get(FINGERPRINT_COOKIE)?.value;
 
