@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #EDEAE3;  /* flat cool newsprint — all chrome, all pages except the feed */
+  --ink: #12100E;    /* near-black — all text */
+  --rule: #C4BFB4;   /* hairlines, dividers, borders */
+  --live: #E8422C;   /* ONLY the voted state and live indicators */
+  --field: #1C1A17;  /* video letterbox surround, feed background */
+
+  /* The same five colours as channels, so Tailwind alpha modifiers resolve. */
+  --paper-rgb: 237 234 227;
+  --ink-rgb: 18 16 14;
+  --rule-rgb: 196 191 180;
+  --live-rgb: 232 66 44;
+  --field-rgb: 28 26 23;
+}
+
+@layer base {
+  * {
+    border-color: var(--rule);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body), system-ui, sans-serif;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Every numeral on the site is monospaced. */
+  .tabular {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  ::selection {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* Focus is visible and it is the one place --live earns an exception:
+     an operator indicator, not decoration. */
+  :focus-visible {
+    outline: 2px solid var(--live);
+    outline-offset: 2px;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  input,
+  textarea,
+  select {
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 0;
+    padding: 10px 12px;
+    width: 100%;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--ink);
+    opacity: 0.35;
+  }
+}
+
+@layer components {
+  /* Small mono labels in the margins. These carry information. */
+  .marginalia {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .rule-t { border-top: 1px solid var(--rule); }
+  .rule-b { border-bottom: 1px solid var(--rule); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid var(--ink);
+    padding: 10px 16px;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .btn:hover:not(:disabled) {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-solid {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .btn-solid:hover:not(:disabled) {
+    background: transparent;
+    color: var(--ink);
+  }
+}
+
+/* ---------------------------------------------------------------- motion ---
+   Almost none, and all of it mechanical. */
+
+.flip-card {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+
+.flip-digit {
+  display: inline-block;
+  will-change: transform;
+}
+
+@keyframes flip-down {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes flip-up {
+  0%   { transform: translateY(100%); }
+  100% { transform: translateY(0); }
+}
+
+.flip-down { animation: flip-down 180ms steps(6, end) both; }
+.flip-up   { animation: flip-up   180ms steps(6, end) both; }
+
+@keyframes vote-mark {
+  0%   { transform: translate(-50%, -50%) scale(0.6); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+}
+
+.vote-mark { animation: vote-mark 320ms linear both; }
+
+/* The live indicator ticks; it does not pulse or glow. */
+@keyframes live-tick {
+  0%, 49%   { opacity: 1; }
+  50%, 100% { opacity: 0.25; }
+}
+
+.live-tick { animation: live-tick 2s steps(1, end) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Scroll-snap feed. No transition beyond the snap. */
+.snap-feed {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+}
+
+.snap-feed::-webkit-scrollbar { display: none; }
+
+.snap-item {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
