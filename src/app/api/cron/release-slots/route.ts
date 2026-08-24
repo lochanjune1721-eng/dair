@@ -7,8 +7,13 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Clears reservations past reserved_until, releasing the slot.
- * Wired to Vercel cron every 5 minutes (see vercel.json).
+ * Deletes reservation rows past reserved_until.
+ *
+ * This is housekeeping, not a correctness requirement. An expired reservation
+ * stops counting against the 25 the moment it lapses, because slots_taken only
+ * counts reservations where reserved_until > now(), and claim_slot only counts
+ * rows that actually hold a slot number. Nothing is scheduled to call this —
+ * hit it by hand when the entries table needs tidying, or leave the rows.
  */
 async function run(request: NextRequest) {
   const secret = env.cronSecret;

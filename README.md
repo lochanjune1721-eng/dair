@@ -50,7 +50,7 @@ Stripe Connect.
 | `FINGERPRINT_SALT` | Salts the IP hash. Also signs upload tokens unless `UPLOAD_TOKEN_SECRET` is set. |
 | `ADMIN_PASSWORD` | Checked server-side in a route handler, exchanged for a signed httpOnly cookie. |
 | `NEXT_PUBLIC_SITE_URL` | Absolute URL for Stripe redirects, upload links and OG metadata. |
-| `CRON_SECRET` | Optional bearer token for `/api/cron/release-slots`. |
+| `CRON_SECRET` | Optional bearer token for `/api/cron/release-slots`, the manual cleanup endpoint. |
 | `RESEND_API_KEY` / `MAIL_FROM` | Optional. Sends the post-payment upload link; without it the link is logged and remains copyable from `/admin`. |
 
 ## Pages
@@ -77,8 +77,15 @@ re-counts, and assigns `max(slot_number) + 1`. Two simultaneous payments cannot 
 slot 25 — the loser gets an error and is flagged for refund rather than silently oversold.
 The function is idempotent, so Stripe's retries are harmless.
 
-A cron hits `/api/cron/release-slots` every five minutes (see `vercel.json`) and deletes
-reservations past `reserved_until`, releasing the slot.
+There is no cron. A lapsed reservation releases its slot the instant it expires, because
+`slots_taken` only counts reservations where `reserved_until > now()`, and `claim_slot` only
+counts rows that actually hold a slot number. Stripe enforces the same window from its side —
+the Checkout session carries `expires_at` set to the same 30 minutes — so an abandoned
+checkout cannot come back and claim a slot late.
+
+`/api/cron/release-slots` still exists to delete the dead reservation rows, but nothing calls
+it on a schedule. It is housekeeping: hit it by hand if the entries table gets untidy, or
+leave the rows alone.
 
 ## Voting integrity
 

@@ -190,7 +190,9 @@ language sql stable security definer set search_path = public as $$
           or (status = 'reserved' and reserved_until > now()));
 $$;
 
--- Vacuum expired reservations. Called by the cron route every 5 minutes.
+-- Vacuum expired reservation rows. Housekeeping only, and nothing schedules it:
+-- an expired reservation already stops counting against the 25 above, since
+-- slots_taken requires reserved_until > now().
 create or replace function public.release_expired_reservations() returns int
 language plpgsql security definer set search_path = public as $$
 declare v_count int;
